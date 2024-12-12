@@ -13,12 +13,17 @@ from wtforms import Field, ValidationError
 def number_length(min: int, max: int, message: Optional[str] = None):
     def _number_length(form: FlaskForm, field: Field):
         if (field.data < min) or (field.data > max):
-            raise ValidationError('invalid phone number length')
+            raise ValidationError(message=message)
 
     return _number_length
 
 
 class NumberLength:
+    def __init__(self, min=None, max=None, message=None):
+        self.message = message
+        self.min = min
+        self.max = max
+
     def __call__(self, form: FlaskForm, field: Field):
-        if (field.data < 1000000000) or (field.data > 9999999999):
-            raise ValidationError('invalid phone number length')
+        if len(str(field.data)) > self.max or len(str(field.data)) < self.min:
+            raise ValidationError(message=self.message)
